@@ -36,14 +36,14 @@ public class UserServiceImpl implements UserService {
 		List<BusinessMessage> BusinessMessageList= validateRequest(userRequest);
 		if(BusinessMessageList.isEmpty())
 		{
-//			User userCheck=getUserByIdentificationId(userRequest.getIdentification_id());
-//			if(!Objects.isNull(userCheck))
-//			{
-//				BusinessMessageList.add(new BusinessMessage("user already existed"));
-//				response.setBusinessMessage(BusinessMessageList);
-//				response.setApiStatus(StatusEnum.FAIL);
-//				return response;
-//			}
+			List<User> user1=getUserByIdentificationId(userRequest.getIdentification_id());
+			if(!user1.isEmpty())
+			{
+				BusinessMessageList.add(new BusinessMessage("user already existed"));
+				response.setBusinessMessage(BusinessMessageList);
+				response.setApiStatus(StatusEnum.FAIL);
+				return response;
+			}
 			Address address=new Address(userRequest.getAddress().getHomeNumber(), userRequest.getAddress().getBuildingNumber(), userRequest.getAddress().getStreetName(), 
 					userRequest.getAddress().getLandMarks(), userRequest.getAddress().getCity(), userRequest.getAddress().getState(), userRequest.getAddress().getPincode());
 			address=addressRepository.save(address);

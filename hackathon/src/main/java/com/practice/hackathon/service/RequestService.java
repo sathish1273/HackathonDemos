@@ -8,6 +8,9 @@ import com.practice.hackathon.response.Response;
 public interface RequestService {
 	
 	public Response addrequest(RequestData requestData);
-	String updateRequest(@Valid long requestId, String status);
+	public String updateRequest(@Valid long requestId, String status);
+	public void connectionEnabled();
+	public Response requestList();
+	
 
 }

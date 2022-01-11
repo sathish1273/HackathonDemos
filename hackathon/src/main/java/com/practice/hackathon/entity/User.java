@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
 public class User {
@@ -24,7 +24,7 @@ public class User {
 	private long identificationId;
 	private byte[] identification_proof;
 	private String email;
-	@ManyToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "addressId", insertable = true, updatable = true)
 	private Address address;
 

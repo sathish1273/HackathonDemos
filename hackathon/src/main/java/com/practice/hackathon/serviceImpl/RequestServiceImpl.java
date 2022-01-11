@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import com.practice.hackathon.dto.BusinessMessage;
 import com.practice.hackathon.dto.RequestStatus;
 import com.practice.hackathon.dto.StatusEnum;
+import com.practice.hackathon.entity.Plan;
 import com.practice.hackathon.entity.Request;
 import com.practice.hackathon.entity.User;
+import com.practice.hackathon.repository.PlansRepository;
 import com.practice.hackathon.repository.RequestRepository;
 import com.practice.hackathon.repository.UserRepository;
 import com.practice.hackathon.request.RequestData;
@@ -30,6 +32,9 @@ public class RequestServiceImpl implements RequestService {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	PlansRepository planRepository;
 	
 	@Override
 	public Response addrequest(RequestData requestData) {
@@ -60,20 +65,37 @@ public class RequestServiceImpl implements RequestService {
 	
 	private List<BusinessMessage> validateRequest(RequestData requestData) {
 		List<BusinessMessage> BusinessMessageList=new ArrayList<BusinessMessage>();
-		Request request=requestRepository.findByUserId(requestData.getUserId());
-		if(!Objects.isNull(request))
-		{
-			BusinessMessageList.add(new BusinessMessage("Request is already existed."));
-			return BusinessMessageList;
-		}
+//		Request request=requestRepository.findByUserId(requestData.getUserId());
+//		if(!Objects.isNull(request))
+//		{
+//			BusinessMessageList.add(new BusinessMessage("Request is already existed."));
+//			return BusinessMessageList;
+//		}
 		Optional<User> user=userRepository.findByUserId(requestData.getUserId());
-		if(user.isPresent())
+		if(!user.isPresent())
 		{
+			BusinessMessageList.add(new BusinessMessage("Incorrect UserId"));
 			return BusinessMessageList;
 		}
-		BusinessMessageList.add(new BusinessMessage("User not existed with UserId"));
+		Plan plan=planRepository.findByPlanId(requestData.getPlanId());
+		if(Objects.isNull(plan))
+		{
+			BusinessMessageList.add(new BusinessMessage("Incorrect planId"));
+			return BusinessMessageList;
+		}
+		
 		return BusinessMessageList;
 	}
+	
+	@Override
+	public void connectionEnabled() {
+		List<Request> requestList = requestRepository.findByRequestStatus(RequestStatus.APPROVED.toString());
+		requestList.forEach(r->{
+			r.setRequestStatus(RequestStatus.CONNECTION_ENABLED.toString());
+			requestRepository.save(r);
+		});	
+	}
+
 	
 	public Request getRequestByRequestId(Long requestId) {
 		Optional<Request> request = requestRepository.findById(requestId);
@@ -87,14 +109,23 @@ public class RequestServiceImpl implements RequestService {
 
 		@Override
 		public String updateRequest(@Valid long requestId, String status) {
-		Request dbRequest = getRequestByRequestId(requestId);
-		dbRequest.setRequestStatus(status);
-		Request request = requestRepository.save(dbRequest);
-		if (!Objects.isNull(request)) {
-		return "Successfully updated request";
-		} else {
-		return "Failed to update the request";
+			Request dbRequest = getRequestByRequestId(requestId);
+			dbRequest.setRequestStatus(status);
+			Request request = requestRepository.save(dbRequest);
+			if (!Objects.isNull(request)) {
+			return "Successfully updated request";
+			} else {
+			return "Failed to update the request";
+			}
 		}
+
+		@Override
+		public Response requestList() {
+			Response response=new Response();
+			List<Request> requestList = requestRepository.findByRequestStatus(RequestStatus.INPROGRESS.toString());
+			response.setApiStatus(StatusEnum.SUCCESS);
+			response.setResponseData(requestList);
+			return response;
 		}
 
 }

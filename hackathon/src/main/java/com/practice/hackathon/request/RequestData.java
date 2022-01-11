@@ -8,18 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RequestData {
 	@NotNull(message = "PlanId should be not be empty")
-	private long planId;
+	private int planId;
 	@NotNull(message = "UserIdentificationId should be not be empty")
 	private long userId;
 	@NotNull(message = "MobileNumber should be not be empty")
 	private long mobileNumber;
-	@NotEmpty(message = "RequestStatus should be not be empty")
 	private String requestStatus;
 	private String comments;
-	public long getPlanId() {
+	public int getPlanId() {
 		return planId;
 	}
-	public void setPlanId(long planId) {
+	public void setPlanId(int planId) {
 		this.planId = planId;
 	}
 	

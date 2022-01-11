@@ -7,5 +7,6 @@ import com.practice.hackathon.entity.Plan;
 
 @Repository
 public interface PlansRepository extends JpaRepository<Plan, Integer> {
-
+  
+	public Plan findByPlanId(int planId);
 }

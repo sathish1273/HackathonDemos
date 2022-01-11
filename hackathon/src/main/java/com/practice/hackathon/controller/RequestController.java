@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,11 +39,25 @@ public class RequestController {
 		return new ResponseEntity<>(response,httpstatus);
 	}
 	
+	//@Scheduled(fixedRate = 5000)
+	@Scheduled(cron = "0 0/30 * * * ?")
+	public void ScheduledFixedRate() 
+	{
+		System.out.println("I will execute after every 2 min");
+		requestService.connectionEnabled();
+	}
+	
 	@PutMapping("/requestreview")
 	public String updateRequest(@Valid @RequestParam("requestId") long requestId, @RequestParam("status") String status)
 	{
 	return requestService.updateRequest(requestId, status);
-
+	}
+	
+	@PostMapping("/requests")
+	public ResponseEntity<Response> requestList()
+	{
+		Response response= requestService.requestList();
+		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 
 }
