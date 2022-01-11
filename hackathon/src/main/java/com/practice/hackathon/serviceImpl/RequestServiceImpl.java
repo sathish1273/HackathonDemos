@@ -39,7 +39,7 @@ public class RequestServiceImpl implements RequestService {
 			request=requestRepository.save(request);
 			if(!Objects.isNull(request))
 			{
-				BusinessMessageList.add(new BusinessMessage("Request has been submitted successfully."));
+				BusinessMessageList.add(new BusinessMessage("New Mobile Connection Request has been submitted successfully."));
 				response.setBusinessMessage(BusinessMessageList);
 				response.setApiStatus(StatusEnum.SUCCESS);
 				response.setResponseData(new RequestResponse(RequestStatus.INPROGRESS, request.getRequestId()));
@@ -69,7 +69,7 @@ public class RequestServiceImpl implements RequestService {
 		{
 			return BusinessMessageList;
 		}
-		BusinessMessageList.add(new BusinessMessage("User not existed with UserIdentificationId"));
+		BusinessMessageList.add(new BusinessMessage("User not existed with UserId"));
 		return BusinessMessageList;
 	}
 
