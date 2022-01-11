@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +41,7 @@ public class RequestController {
 	}
 	
 	//@Scheduled(fixedRate = 5000)
-	@Scheduled(cron = "0 0/30 * * * ?")
+	@Scheduled(cron = "0 0/2 * * * ?")
 	public void ScheduledFixedRate() 
 	{
 		System.out.println("I will execute after every 2 min");
@@ -53,7 +54,7 @@ public class RequestController {
 	return requestService.updateRequest(requestId, status);
 	}
 	
-	@PostMapping("/requests")
+	@GetMapping("/requests")
 	public ResponseEntity<Response> requestList()
 	{
 		Response response= requestService.requestList();

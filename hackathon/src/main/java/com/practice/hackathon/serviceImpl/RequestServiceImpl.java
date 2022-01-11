@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import com.practice.hackathon.response.Response;
 import com.practice.hackathon.service.RequestService;
 
 @Service
+@Transactional
 public class RequestServiceImpl implements RequestService {
 
 	@Autowired
@@ -90,10 +92,12 @@ public class RequestServiceImpl implements RequestService {
 	@Override
 	public void connectionEnabled() {
 		List<Request> requestList = requestRepository.findByRequestStatus(RequestStatus.APPROVED.toString());
+		List<Request> requestLists = new ArrayList<Request>();
 		requestList.forEach(r->{
 			r.setRequestStatus(RequestStatus.CONNECTION_ENABLED.toString());
-			requestRepository.save(r);
+			requestLists.add(r);
 		});	
+		requestRepository.saveAll(requestLists);
 	}
 
 	

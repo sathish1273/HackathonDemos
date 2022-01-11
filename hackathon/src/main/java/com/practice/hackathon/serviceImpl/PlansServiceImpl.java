@@ -2,6 +2,8 @@ package com.practice.hackathon.serviceImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import com.practice.hackathon.repository.PlansRepository;
 import com.practice.hackathon.service.PlansService;
 
 @Service
+@Transactional
 public class PlansServiceImpl implements PlansService {
 
     @Autowired
