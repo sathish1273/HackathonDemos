@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +74,27 @@ public class RequestServiceImpl implements RequestService {
 		BusinessMessageList.add(new BusinessMessage("User not existed with UserId"));
 		return BusinessMessageList;
 	}
+	
+	public Request getRequestByRequestId(Long requestId) {
+		Optional<Request> request = requestRepository.findById(requestId);
+		if (request.isPresent()) {
+		return request.get();
+		}
+		return null;
+		}
+
+
+
+		@Override
+		public String updateRequest(@Valid long requestId, String status) {
+		Request dbRequest = getRequestByRequestId(requestId);
+		dbRequest.setRequestStatus(status);
+		Request request = requestRepository.save(dbRequest);
+		if (!Objects.isNull(request)) {
+		return "Successfully updated request";
+		} else {
+		return "Failed to update the request";
+		}
+		}
 
 }
