@@ -1,9 +1,11 @@
 package com.practice.hackathon.controller;
 
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,8 @@ import com.practice.hackathon.service.UserService;
 @Validated
 public class UserController {
 	
+	private static final org.slf4j.Logger LOGGER=LoggerFactory.getLogger(UserController.class);
+	
 	@Autowired
 	UserService userService;
 	
@@ -39,6 +43,7 @@ public class UserController {
 			httpstatus=HttpStatus.NOT_FOUND;
 		}
 		else {
+			LOGGER.info("success");
 			httpstatus=HttpStatus.OK;
 		}
 		return new ResponseEntity<>(response,httpstatus);
@@ -53,6 +58,7 @@ public class UserController {
 			httpstatus=HttpStatus.NOT_FOUND;
 		}
 		else {
+			LOGGER.info("success");
 			httpstatus=HttpStatus.OK;
 		}
 		return new ResponseEntity<>(response,httpstatus);

@@ -21,9 +21,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    @Resource(name = "userService")
+    //@Resource(name = "userService")
+//    @Autowired
 //    private UserDetailsService userDetailsService;
-
+    
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
@@ -35,8 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
- //       auth.userDetailsService(userDetailsService)
- //               .passwordEncoder(encoder());
+//        auth.userDetailsService(userDetailsService)
+//                .passwordEncoder(encoder());
     }
 
     @Bean

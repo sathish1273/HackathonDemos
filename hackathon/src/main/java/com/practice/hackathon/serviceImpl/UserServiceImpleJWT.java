@@ -19,7 +19,7 @@ public class UserServiceImpleJWT implements UserDetailsService {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByFirstName(username);
