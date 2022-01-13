@@ -14,5 +14,5 @@ public interface PlansService {
 
     String saveAllNumbers();
 
-    String updateAvailabilityOfNumber(int numberId);
+    String updateAvailabilityOfNumber(long numberId);
 }

@@ -1,18 +1,28 @@
 package com.practice.hackathon.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Request {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private long requestId;
-	private long planId;
-	private long userId;
-	private long mobileNumber;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "planId", insertable = true, updatable = true)
+	private Plan planId;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId", insertable = true, updatable = true)
+	private User userId;
+	@OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "numberId", insertable = true, updatable = true)
+	private MobileNumber mobileNumber;
 	private String requestStatus;
 	private String comments;
 	public long getRequestId() {
@@ -21,23 +31,22 @@ public class Request {
 	public void setRequestId(long requestId) {
 		this.requestId = requestId;
 	}
-	public long getPlanId() {
+	public Plan getPlanId() {
 		return planId;
 	}
-	public void setPlanId(long planId) {
+	public void setPlanId(Plan planId) {
 		this.planId = planId;
 	}
-	
-	public long getUserId() {
+	public User getUserId() {
 		return userId;
 	}
-	public void setUserId(long userId) {
+	public void setUserId(User userId) {
 		this.userId = userId;
 	}
-	public long getMobileNumber() {
+	public MobileNumber getMobileNumber() {
 		return mobileNumber;
 	}
-	public void setMobileNumber(long mobileNumber) {
+	public void setMobileNumber(MobileNumber mobileNumber) {
 		this.mobileNumber = mobileNumber;
 	}
 	public String getRequestStatus() {
@@ -52,8 +61,7 @@ public class Request {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	public Request(long planId, long userId, long mobileNumber, String requestStatus,
-			String comments) {
+	public Request(Plan planId, User userId, MobileNumber mobileNumber, String requestStatus, String comments) {
 		super();
 		this.planId = planId;
 		this.userId = userId;
@@ -61,7 +69,6 @@ public class Request {
 		this.requestStatus = requestStatus;
 		this.comments = comments;
 	}
-	
 	public Request() {
 		
 	}

@@ -10,12 +10,14 @@ import java.util.regex.Pattern;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.practice.hackathon.dto.BusinessMessage;
 import com.practice.hackathon.dto.StatusEnum;
 import com.practice.hackathon.entity.Address;
 import com.practice.hackathon.entity.User;
+import com.practice.hackathon.exceptions.CustomeException;
 import com.practice.hackathon.repository.AddressrRepository;
 import com.practice.hackathon.repository.UserRepository;
 import com.practice.hackathon.request.UserRequest;
@@ -36,28 +38,26 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response addUser(UserRequest userRequest) {
 		Response response=new Response();
-		List<BusinessMessage> BusinessMessageList= validateRequest(userRequest);
-		if(BusinessMessageList.isEmpty())
+		List<BusinessMessage> businessMessageList= validateRequest(userRequest);
+		if(businessMessageList.isEmpty())
 		{
 			List<User> user1=getUserByIdentificationId(userRequest.getIdentification_id());
 			if(!user1.isEmpty())
 			{
-				BusinessMessageList.add(new BusinessMessage("user already existed"));
-				response.setBusinessMessage(BusinessMessageList);
-				response.setApiStatus(StatusEnum.FAIL);
-				return response;
+				businessMessageList.add(new BusinessMessage("User already registered."));
+				throw new CustomeException(StatusEnum.ALREADY_EXISTED.toString(),businessMessageList,HttpStatus.CONFLICT);
 			}
 			Address address=new Address(userRequest.getAddress().getHomeNumber(), userRequest.getAddress().getBuildingNumber(), userRequest.getAddress().getStreetName(), 
 					userRequest.getAddress().getLandMarks(), userRequest.getAddress().getCity(), userRequest.getAddress().getState(), userRequest.getAddress().getPincode());
-			address=addressRepository.save(address);
+			//address=addressRepository.save(address);
 			if(!Objects.isNull(address))
 			{
 				User user=new User(userRequest.getFirstName(), userRequest.getLastName(), userRequest.getDateOfBirth(), userRequest.getNatinality(), userRequest.getGender(),
 						userRequest.getPrimary_contact_number(), userRequest.getSecondary_contact_number(), userRequest.getIdentification_id(), null, userRequest.getEmail(), address);
 				user=userRepository.save(user);
 				if(!Objects.isNull(user)){
-					BusinessMessageList.add(new BusinessMessage("Successfully inserted."));
-					response.setBusinessMessage(BusinessMessageList);
+					businessMessageList.add(new BusinessMessage("Successfully inserted."));
+					response.setBusinessMessage(businessMessageList);
 					response.setApiStatus(StatusEnum.SUCCESS);
 					response.setResponseData(new UserResponse(user.getUserId()));
 					return response;
@@ -66,9 +66,7 @@ public class UserServiceImpl implements UserService {
 			
 		}
 		else {
-			response.setBusinessMessage(BusinessMessageList);
-			response.setApiStatus(StatusEnum.FAIL);
-			return response;
+			throw new CustomeException(StatusEnum.NOT_FOUND.toString(), businessMessageList, HttpStatus.BAD_REQUEST);
 		}
 		return response;
 	}
@@ -87,6 +85,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response getUser(long userId) {
 		Response response=new Response();
+		List<BusinessMessage> buisinessMessage= new ArrayList<BusinessMessage>();
 		Optional<User> user=userRepository.findByUserId(userId);
 		if(user.isPresent())
 		{
@@ -94,7 +93,8 @@ public class UserServiceImpl implements UserService {
 			response.setResponseData(user.get());
 		}
 		else {
-			response.setApiStatus(StatusEnum.FAIL);
+			buisinessMessage.add(new BusinessMessage("User Not Found.."));
+			throw new CustomeException(StatusEnum.NOT_FOUND.toString(),buisinessMessage,HttpStatus.NOT_FOUND);
 		}
 		return response;
 	}
@@ -119,6 +119,26 @@ public class UserServiceImpl implements UserService {
 	     Matcher matcher = pattern.matcher(str);  
 	     return matcher.matches();
 	}
+
+	@Override
+	public User getUser(String userName) {
+		User user=userRepository.findByFirstName(userName);
+		return user;
+	}
+
+//	@Override
+//	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//
+//		User user = userRepository.findByFirstName(username);
+//		if(user == null){
+//			throw new UsernameNotFoundException("Invalid username or password.");
+//		}
+//		return new org.springframework.security.core.userdetails.User(user.getFirstName(), user.getFirstName(), getAuthority());
+//	}
+//	
+//	private List<SimpleGrantedAuthority> getAuthority() {
+//		return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+//	}
 
 	
 }

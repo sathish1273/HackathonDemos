@@ -59,7 +59,7 @@ public class PlansServiceImpl implements PlansService {
     }
 
     @Override
-    public String updateAvailabilityOfNumber(int numberId) {
+    public String updateAvailabilityOfNumber(long numberId) {
         MobileNumber number = numberRepository.findById(numberId).get();
         number.setAvailability("N");
         numberRepository.save(number);

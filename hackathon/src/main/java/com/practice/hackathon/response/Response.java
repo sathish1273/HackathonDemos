@@ -2,9 +2,11 @@ package com.practice.hackathon.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.practice.hackathon.dto.BusinessMessage;
 import com.practice.hackathon.dto.StatusEnum;
 
+@JsonIgnoreProperties
 public class Response {
 	
 	private StatusEnum apiStatus;

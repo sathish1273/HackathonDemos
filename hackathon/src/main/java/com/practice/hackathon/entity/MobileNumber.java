@@ -1,21 +1,24 @@
 package com.practice.hackathon.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class MobileNumber {
 
     @Id
-    private int numberId;
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
+    private long numberId;
     private Long number;
     private String availability;
 
-   public int getNumberId() {
+   public long getNumberId() {
       return numberId;
    }
 
-   public void setNumberId(int numberId) {
+   public void setNumberId(long numberId) {
       this.numberId = numberId;
    }
 

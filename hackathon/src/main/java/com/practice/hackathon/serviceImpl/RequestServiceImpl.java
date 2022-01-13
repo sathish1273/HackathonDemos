@@ -9,14 +9,18 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.practice.hackathon.dto.BusinessMessage;
 import com.practice.hackathon.dto.RequestStatus;
 import com.practice.hackathon.dto.StatusEnum;
+import com.practice.hackathon.entity.MobileNumber;
 import com.practice.hackathon.entity.Plan;
 import com.practice.hackathon.entity.Request;
 import com.practice.hackathon.entity.User;
+import com.practice.hackathon.exceptions.CustomeException;
+import com.practice.hackathon.repository.NumberRepository;
 import com.practice.hackathon.repository.PlansRepository;
 import com.practice.hackathon.repository.RequestRepository;
 import com.practice.hackathon.repository.UserRepository;
@@ -38,55 +42,87 @@ public class RequestServiceImpl implements RequestService {
 	@Autowired
 	PlansRepository planRepository;
 	
+	@Autowired
+	NumberRepository numberRepository;
+	
 	@Override
 	public Response addrequest(RequestData requestData) {
 		Response response=new Response();
-		List<BusinessMessage> BusinessMessageList= validateRequest(requestData);
-		if(BusinessMessageList.isEmpty())
+		List<BusinessMessage> businessMessageList= validateRequest(requestData);
+		if(businessMessageList.isEmpty())
 		{
-			Request request=new Request(requestData.getPlanId(), requestData.getUserId(), requestData.getMobileNumber(), RequestStatus.INPROGRESS.toString(), null);
+			Request request=new Request(getPlan(requestData.getPlanId()), getUser(requestData.getUserId()), getMobileNumber(requestData.getMobileNumber()), RequestStatus.INPROGRESS.toString(), null);
 			request=requestRepository.save(request);
 			if(!Objects.isNull(request))
 			{
-				BusinessMessageList.add(new BusinessMessage("New Mobile Connection Request has been submitted successfully."));
-				response.setBusinessMessage(BusinessMessageList);
+				MobileNumber mobileNumber=request.getMobileNumber();
+				mobileNumber.setAvailability("N");
+				numberRepository.save(mobileNumber);
+				
+				businessMessageList.add(new BusinessMessage("New Mobile Connection Request has been submitted successfully."));
+				response.setBusinessMessage(businessMessageList);
 				response.setApiStatus(StatusEnum.SUCCESS);
 				response.setResponseData(new RequestResponse(RequestStatus.INPROGRESS, request.getRequestId()));
 				return response;
 			}
-			else {
-				BusinessMessageList.add(new BusinessMessage("Problem with the request"));
-				response.setBusinessMessage(BusinessMessageList);
-				response.setApiStatus(StatusEnum.FAIL);
-			}
 		}
-		response.setBusinessMessage(BusinessMessageList);
-		response.setApiStatus(StatusEnum.FAIL);
-		return response;
+		throw new CustomeException(StatusEnum.INPUT_INVALID.toString(), businessMessageList, HttpStatus.BAD_REQUEST);
 	}
 	
 	private List<BusinessMessage> validateRequest(RequestData requestData) {
-		List<BusinessMessage> BusinessMessageList=new ArrayList<BusinessMessage>();
-//		Request request=requestRepository.findByUserId(requestData.getUserId());
-//		if(!Objects.isNull(request))
+		getUser(requestData.getUserId());
+		getPlan(requestData.getPlanId());
+		getMobileNumber(requestData.getMobileNumber());
+		List<BusinessMessage> businessMessageList=new ArrayList<BusinessMessage>();
+//		if(!Objects.isNull(getUser(requestData.getUserId())))
 //		{
-//			BusinessMessageList.add(new BusinessMessage("Request is already existed."));
-//			return BusinessMessageList;
+//			businessMessageList.add(new BusinessMessage("Incorrect UserId"));
 //		}
-		Optional<User> user=userRepository.findByUserId(requestData.getUserId());
+//		if(Objects.isNull(getPlan(requestData.getPlanId())))
+//		{
+//			businessMessageList.add(new BusinessMessage("Incorrect planId"));
+//		}
+//		if(Objects.isNull(getMobileNumber(requestData.getMobileNumber())))
+//		{
+//			businessMessageList.add(new BusinessMessage("Incorrect Mo"));
+//		}
+		
+		return businessMessageList;
+	}
+	private User getUser(long userId)
+	{
+		List<BusinessMessage> businessMessageList=new ArrayList<BusinessMessage>();
+		Optional<User> user=userRepository.findByUserId(userId);
 		if(!user.isPresent())
 		{
-			BusinessMessageList.add(new BusinessMessage("Incorrect UserId"));
-			return BusinessMessageList;
+			businessMessageList.add(new BusinessMessage("Incorrect UserId"));
+			throw new CustomeException(StatusEnum.INPUT_INVALID.toString(), businessMessageList, HttpStatus.BAD_REQUEST);
 		}
-		Plan plan=planRepository.findByPlanId(requestData.getPlanId());
+		return user.get();
+	}
+	
+	private Plan getPlan(int planId)
+	{
+		List<BusinessMessage> businessMessageList=new ArrayList<BusinessMessage>();
+		Plan plan=planRepository.findByPlanId(planId);
 		if(Objects.isNull(plan))
 		{
-			BusinessMessageList.add(new BusinessMessage("Incorrect planId"));
-			return BusinessMessageList;
+			businessMessageList.add(new BusinessMessage("Incorrect planId"));
+			throw new CustomeException(StatusEnum.INPUT_INVALID.toString(), businessMessageList, HttpStatus.BAD_REQUEST);
 		}
-		
-		return BusinessMessageList;
+		return plan;
+	}
+	
+	private MobileNumber getMobileNumber(long l)
+	{
+		List<BusinessMessage> businessMessageList=new ArrayList<BusinessMessage>();
+		Optional<MobileNumber> mobileNumber=numberRepository.findByNumberIdAndAvailability(l,"Y");
+		if(!mobileNumber.isPresent())
+		{
+			businessMessageList.add(new BusinessMessage("Incorrect mobileNumber id.."));
+			throw new CustomeException(StatusEnum.INPUT_INVALID.toString(), businessMessageList, HttpStatus.BAD_REQUEST);
+		}
+		return mobileNumber.get();
 	}
 	
 	@Override

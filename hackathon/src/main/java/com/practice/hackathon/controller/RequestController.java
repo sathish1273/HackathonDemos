@@ -41,7 +41,7 @@ public class RequestController {
 	}
 	
 	//@Scheduled(fixedRate = 5000)
-	@Scheduled(cron = "0 0/2 * * * ?")
+	//@Scheduled(cron = "0 0/2 * * * ?")
 	public void ScheduledFixedRate() 
 	{
 		System.out.println("I will execute after every 2 min");

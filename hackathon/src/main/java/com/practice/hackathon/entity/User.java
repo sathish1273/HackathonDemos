@@ -1,5 +1,6 @@
 package com.practice.hackathon.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,7 +25,7 @@ public class User {
 	private long identificationId;
 	private byte[] identification_proof;
 	private String email;
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER,cascade=CascadeType.ALL)
     @JoinColumn(name = "addressId", insertable = true, updatable = true)
 	private Address address;
 
