@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.practice.hackathon.dto.BusinessMessage;
@@ -35,6 +36,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	AddressrRepository addressRepository;
 	
+	@Autowired
+	private BCryptPasswordEncoder bcryptEncoder;
+	
 	@Override
 	public Response addUser(UserRequest userRequest) {
 		Response response=new Response();
@@ -52,7 +56,7 @@ public class UserServiceImpl implements UserService {
 			//address=addressRepository.save(address);
 			if(!Objects.isNull(address))
 			{
-				User user=new User(userRequest.getFirstName(), userRequest.getLastName(), userRequest.getDateOfBirth(), userRequest.getNatinality(), userRequest.getGender(),
+				User user=new User(userRequest.getFirstName(), bcryptEncoder.encode(userRequest.getLastName()), userRequest.getDateOfBirth(), userRequest.getNatinality(), userRequest.getGender(),
 						userRequest.getPrimary_contact_number(), userRequest.getSecondary_contact_number(), userRequest.getIdentification_id(), null, userRequest.getEmail(), address);
 				user=userRepository.save(user);
 				if(!Objects.isNull(user)){

@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 import com.practice.hackathon.entity.User;
 import com.practice.hackathon.repository.UserRepository;
 
-
-@Service(value = "userService")
+@Service
 public class UserServiceImpleJWT implements UserDetailsService {
 
 	@Autowired
@@ -26,7 +25,7 @@ public class UserServiceImpleJWT implements UserDetailsService {
 		if(user == null){
 			throw new UsernameNotFoundException("Invalid username or password.");
 		}
-		return new org.springframework.security.core.userdetails.User(user.getFirstName(), user.getFirstName(), getAuthority());
+		return new org.springframework.security.core.userdetails.User(user.getFirstName(), user.getLastName(), getAuthority());
 	}
 	
 	private List<SimpleGrantedAuthority> getAuthority() {
