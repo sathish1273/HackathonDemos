@@ -21,7 +21,8 @@ public class PlansController {
     @Autowired
     PlansServiceImpl service;
 
-    // for testing git commits
+    // for testing git commit
+    // using intellij
     @PostMapping("/Plan")
     public String savePlan(@Valid @RequestBody Plan plan) {
         return service.savePlan(plan);
