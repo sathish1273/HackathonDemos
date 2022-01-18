@@ -1,6 +1,7 @@
 package com.practice.hackathon.serviceImpl;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -60,9 +61,15 @@ public class PlansServiceImpl implements PlansService {
 
     @Override
     public String updateAvailabilityOfNumber(long numberId) {
-        MobileNumber number = numberRepository.findById(numberId).get();
-        number.setAvailability("N");
-        numberRepository.save(number);
+        Optional<MobileNumber> number = numberRepository.findById(numberId);
+        if(number.isPresent()) {
+        	MobileNumber mobileNumber=number.get();
+        	mobileNumber.setAvailability("N");
+            numberRepository.save(mobileNumber);
         return "NUMBER OCCUPIED";
+        }
+        else {
+        	return null;
+        }
     }
 }

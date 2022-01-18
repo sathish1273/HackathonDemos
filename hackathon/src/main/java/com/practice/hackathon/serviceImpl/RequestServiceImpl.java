@@ -150,9 +150,9 @@ public class RequestServiceImpl implements RequestService {
 		@Override
 		public String updateRequest(@Valid long requestId, String status) {
 			Request dbRequest = getRequestByRequestId(requestId);
+			if (!Objects.isNull(dbRequest)) {
 			dbRequest.setRequestStatus(status);
-			Request request = requestRepository.save(dbRequest);
-			if (!Objects.isNull(request)) {
+			requestRepository.save(dbRequest);
 			return "Successfully updated request";
 			} else {
 			return "Failed to update the request";

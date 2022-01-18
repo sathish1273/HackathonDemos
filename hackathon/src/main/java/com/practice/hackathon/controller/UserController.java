@@ -1,7 +1,6 @@
 package com.practice.hackathon.controller;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
