@@ -20,5 +20,8 @@ public class HackathonApplication {
     public BCryptPasswordEncoder encoder(){
         return new BCryptPasswordEncoder();
     }
-
+    
+	/*
+	 * @Bean public ModelMapper modelMapper() { return new ModelMapper(); }
+	 */
 }

@@ -1,34 +1,28 @@
 package com.practice.hackathon.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
- 
-import java.util.Arrays;
-import java.util.List;
- 
-import org.hamcrest.Matchers;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
+import com.practice.hackathon.dto.StatusEnum;
+import com.practice.hackathon.repository.UserRepository;
 import com.practice.hackathon.response.Response;
 import com.practice.hackathon.service.UserService;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(UserController.class)
 public class UserControllerTest {
 	
 //	@Autowired(required = true)
 //	UserService userService1;
 
-    @Autowired
-    MockMvc mockMvc;
+//    @Autowired
+//    MockMvc mockMvc;
     
 //    @Test
 //    public void testgetUser() throws Exception
@@ -39,4 +33,23 @@ public class UserControllerTest {
        // .andExpect(jsonPath("$", Matchers.hasSize(1)))
        // .andExpect(jsonPath("$[0].firstName", Matchers.is("Lokesh")));
     // }
+    
+    @InjectMocks
+    UserController userController;
+    
+    @Mock
+    UserService userService;
+    
+    @Mock
+	UserRepository userRepository;
+    
+    @Test
+    public void testGetUser() throws Exception
+    {
+    	Response res = new Response();
+    	res.setApiStatus(StatusEnum.SUCCESS);
+		Mockito.when(userService.getUser(Mockito.anyLong())).thenReturn(res);
+    	ResponseEntity<Response> response=userController.getUser(1);
+    	assertNotNull(response);
+    }
 }
