@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import com.practice.hackathon.dto.BusinessMessage;
 import com.practice.hackathon.dto.StatusEnum;
-import com.practice.hackathon.entity.Address;
 import com.practice.hackathon.entity.User;
 import com.practice.hackathon.exceptions.CustomeException;
 import com.practice.hackathon.repository.AddressrRepository;
@@ -51,13 +51,9 @@ public class UserServiceImpl implements UserService {
 				businessMessageList.add(new BusinessMessage("User already registered."));
 				throw new CustomeException(StatusEnum.ALREADY_EXISTED.toString(),businessMessageList,HttpStatus.CONFLICT);
 			}
-			Address address=new Address(userRequest.getAddress().getHomeNumber(), userRequest.getAddress().getBuildingNumber(), userRequest.getAddress().getStreetName(), 
-					userRequest.getAddress().getLandMarks(), userRequest.getAddress().getCity(), userRequest.getAddress().getState(), userRequest.getAddress().getPincode());
-			//address=addressRepository.save(address);
-			if(!Objects.isNull(address))
-			{
-				User user=new User(userRequest.getFirstName(), bcryptEncoder.encode(userRequest.getLastName()), userRequest.getDateOfBirth(), userRequest.getNatinality(), userRequest.getGender(),
-						userRequest.getPrimary_contact_number(), userRequest.getSecondary_contact_number(), userRequest.getIdentification_id(), null, userRequest.getEmail(), address);
+			    User user=new User();
+				BeanUtils.copyProperties(userRequest, user);
+				user.setLastName(bcryptEncoder.encode(userRequest.getLastName()));
 				user=userRepository.save(user);
 				if(!Objects.isNull(user)){
 					businessMessageList.add(new BusinessMessage("Successfully inserted."));
@@ -65,9 +61,7 @@ public class UserServiceImpl implements UserService {
 					response.setApiStatus(StatusEnum.SUCCESS);
 					response.setResponseData(new UserResponse(user.getUserId()));
 					return response;
-				}
-			}
-			
+				}		
 		}
 		else {
 			throw new CustomeException(StatusEnum.NOT_FOUND.toString(), businessMessageList, HttpStatus.BAD_REQUEST);
